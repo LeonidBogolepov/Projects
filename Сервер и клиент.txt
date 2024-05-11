@@ -1,0 +1,76 @@
+//Сервер 
+#include<iostream>
+#include<WS2tcpip.h>
+#include<thread>
+#include<sstream>
+#include<vector>
+#pragma comment (lib, "Ws2_32.lib")
+
+void main() {
+    
+    WSADATA some_kind_of_data;
+    WSAStartup(MAKEWORD(2, 2), &some_kind_of_data);
+
+  
+    sockaddr_in listen_address;
+    listen_address.sin_family = AF_INET;
+    listen_address.sin_port = htons(666);
+    listen_address.sin_addr.S_un.S_addr = INADDR_ANY;
+
+    SOCKET listen_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+    bind(listen_socket, (sockaddr*)&listen_address, sizeof(listen_address));
+
+    listen(listen_socket, SOMAXCONN);
+    std::cout << "Server here!";
+
+   
+
+    listen_socket = accept(listen_socket, NULL, NULL);
+
+    
+
+    char buffer[1024]{ 0 };
+
+    recv(listen_socket, buffer, sizeof(buffer), 0);
+
+    std::cout << buffer << std::endl;
+
+   
+    system("pause");
+    closesocket(listen_socket);
+    WSACleanup();
+}
+
+
+
+
+
+//Клиент
+#include<iostream>
+#include<WS2tcpip.h>
+#include<thread>
+#include<sstream>
+#include<vector>
+#pragma comment (lib, "Ws2_32.lib")
+int main() {
+    WSADATA some_kind_of_data;
+    WSAStartup(MAKEWORD(2, 2), &some_kind_of_data);
+
+    
+    sockaddr_in connect_adress;
+    connect_adress.sin_family = AF_INET;
+    connect_adress.sin_port = htons(666);
+    inet_pton(AF_INET, "127.0.0.1", &connect_adress.sin_addr);
+
+    SOCKET connection_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+    connect(connection_socket, (sockaddr*)&connect_adress, sizeof(connect_adress));
+
+    std::string message = "  IU7 BOGOLELOV 1";
+
+    send(connection_socket, message.c_str(), message.size() + 1, 0);
+
+    closesocket(connection_socket);
+    WSACleanup();
+}
